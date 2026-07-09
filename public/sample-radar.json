@@ -1,0 +1,69 @@
+{
+  "demo": true,
+  "countries": [
+    {
+      "code": "US", "name": "United States", "flag": "🇺🇸",
+      "trends": [
+        {"q": "gta 6 trailer", "v": 2000000, "cat": "Games", "news": "Rockstar drops second GTA 6 trailer"},
+        {"q": "black friday deals", "v": 1000000, "cat": "Shopping", "news": "Best Black Friday deals live"},
+        {"q": "nfl scores", "v": 900000, "cat": "Sports", "news": "Sunday NFL results and standings"},
+        {"q": "taylor swift tour", "v": 500000, "cat": "Entertainment", "news": "New tour dates announced"},
+        {"q": "thanksgiving recipes", "v": 400000, "cat": "Food", "news": "Easy turkey recipes for the holiday"},
+        {"q": "powerball numbers", "v": 300000, "cat": "News", "news": "Tonight's Powerball drawing"},
+        {"q": "election results", "v": 250000, "cat": "News", "news": "Latest state-by-state results"},
+        {"q": "weather forecast", "v": 150000, "cat": "Weather", "news": "Storm system moves east"},
+        {"q": "iphone 18", "v": 120000, "cat": "Tech", "news": "Apple's next iPhone leaks"}
+      ]
+    },
+    {
+      "code": "GB", "name": "United Kingdom", "flag": "🇬🇧",
+      "trends": [
+        {"q": "champions league", "v": 800000, "cat": "Sports", "news": "Quarter-final draw revealed"},
+        {"q": "gta 6 trailer", "v": 600000, "cat": "Games", "news": "GTA 6 trailer breaks records"},
+        {"q": "black friday deals", "v": 500000, "cat": "Shopping", "news": "UK Black Friday best buys"},
+        {"q": "premier league table", "v": 450000, "cat": "Sports", "news": "Latest Premier League standings"},
+        {"q": "strictly come dancing", "v": 300000, "cat": "Entertainment", "news": "This week's Strictly results"},
+        {"q": "weather", "v": 120000, "cat": "Weather", "news": "Cold snap hits the UK"},
+        {"q": "iphone 18", "v": 90000, "cat": "Tech", "news": "iPhone 18 rumours"},
+        {"q": "petrol prices", "v": 70000, "cat": "News", "news": "Fuel prices rise again"}
+      ]
+    },
+    {
+      "code": "IT", "name": "Italy", "flag": "🇮🇹",
+      "trends": [
+        {"q": "champions league", "v": 700000, "cat": "Sports", "news": "Sorteggio dei quarti di finale"},
+        {"q": "serie a classifica", "v": 550000, "cat": "Sports", "news": "La classifica aggiornata di Serie A"},
+        {"q": "sanremo 2026", "v": 500000, "cat": "Entertainment", "news": "Il cast di Sanremo 2026"},
+        {"q": "gta 6 trailer", "v": 400000, "cat": "Games", "news": "Nuovo trailer di GTA 6"},
+        {"q": "meteo domani", "v": 300000, "cat": "Weather", "news": "Previsioni meteo per domani"},
+        {"q": "black friday", "v": 250000, "cat": "Shopping", "news": "Le migliori offerte del Black Friday"},
+        {"q": "manovra 2026", "v": 120000, "cat": "News", "news": "Le novità della manovra"},
+        {"q": "ultimo dpcm", "v": 60000, "cat": "News", "news": "Aggiornamenti dal governo"}
+      ]
+    },
+    {
+      "code": "DE", "name": "Germany", "flag": "🇩🇪",
+      "trends": [
+        {"q": "champions league", "v": 650000, "cat": "Sports", "news": "Viertelfinale ausgelost"},
+        {"q": "bundesliga tabelle", "v": 500000, "cat": "Sports", "news": "Aktuelle Bundesliga-Tabelle"},
+        {"q": "gta 6 trailer", "v": 420000, "cat": "Games", "news": "GTA 6 Trailer veröffentlicht"},
+        {"q": "wetter morgen", "v": 350000, "cat": "Weather", "news": "Wettervorhersage für morgen"},
+        {"q": "black friday", "v": 280000, "cat": "Shopping", "news": "Die besten Black-Friday-Angebote"},
+        {"q": "tatort heute", "v": 150000, "cat": "Entertainment", "news": "Der Tatort am Sonntag"},
+        {"q": "benzinpreis", "v": 80000, "cat": "News", "news": "Spritpreise steigen"}
+      ]
+    },
+    {
+      "code": "FR", "name": "France", "flag": "🇫🇷",
+      "trends": [
+        {"q": "ligue des champions", "v": 600000, "cat": "Sports", "news": "Tirage des quarts de finale"},
+        {"q": "ligue 1 classement", "v": 480000, "cat": "Sports", "news": "Le classement de Ligue 1"},
+        {"q": "gta 6 trailer", "v": 390000, "cat": "Games", "news": "Nouvelle bande-annonce de GTA 6"},
+        {"q": "météo demain", "v": 320000, "cat": "Weather", "news": "Prévisions météo pour demain"},
+        {"q": "black friday", "v": 260000, "cat": "Shopping", "news": "Les meilleures offres du Black Friday"},
+        {"q": "roland garros", "v": 140000, "cat": "Sports", "news": "Le tableau de Roland-Garros"},
+        {"q": "prix carburant", "v": 70000, "cat": "News", "news": "Le prix du carburant augmente"}
+      ]
+    }
+  ]
+}

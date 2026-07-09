@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Country Radar — what the world is searching, right now</title>
+  <meta name="description" content="Pick up to 10 countries and see their trending searches as bubble charts, side by side — what's trending everywhere vs. only locally." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand">🛰️ <b>Country Radar</b></div>
+    <div class="tagline">What the world is searching — right now.</div>
+  </header>
+
+  <section class="controls">
+    <div class="controls-head">
+      <span>Select up to <b>10</b> countries</span>
+      <span id="counter" class="counter">0 selected</span>
+    </div>
+    <div id="countryChips" class="chips"></div>
+    <button id="scanBtn" class="scan" disabled>Scan the radar →</button>
+  </section>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <main id="stage" class="stage">
+    <div class="hero" id="hero">
+      <h1>Every country has its own pulse.</h1>
+      <p>Pick a few countries and hit scan. Each one becomes a <b>bubble chart</b> of
+        its <em>trending searches</em> — the bigger the bubble, the bigger the surge.
+        <span class="legend-inline"><i class="lg shared"></i> trending in several countries
+        &nbsp;·&nbsp; <i class="lg unique"></i> a local-only spike</span></p>
+      <button class="try" id="tryDemo">▶ See a live example</button>
+    </div>
+
+    <section id="shared" class="shared-strip" hidden></section>
+    <div id="grid" class="grid"></div>
+  </main>
+
+  <div id="tooltip" class="tooltip" hidden></div>
+
+  <footer class="foot">
+    <span>Made with <b>Trendible</b> · trending data via Apify</span>
+    <a href="https://github.com/growthwithjoseph-bot/country-radar" target="_blank" rel="noopener">GitHub ↗</a>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
