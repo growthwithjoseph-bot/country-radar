@@ -211,7 +211,7 @@ renderChips();
 $("scanBtn").addEventListener("click", scan);
 $("tryDemo").addEventListener("click", () => {
   // preselect a few for the demo
-  ["US", "GB", "IT", "DE", "FR"].forEach(c => { selected.add(c); });
+  ["US", "GB", "IT", "DE", "FR", "ES", "PL"].forEach(c => { selected.add(c); });
   renderChips();
   selected.forEach(c => $("countryChips").querySelector(`[data-code="${c}"]`)?.classList.add("on"));
   updateControls();
