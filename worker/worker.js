@@ -1,19 +1,14 @@
-/* Country Radar — Cloudflare Worker (stateless proxy to Apify).
+/* Country Radar — Cloudflare Worker.
  *
- * Holds APIFY_TOKEN as a secret so it never reaches the browser.
  * POST /api/radar { countries: ["US","IT",...] } -> per-country trending searches.
- *
- * NOTE: the exact Apify actor id + input/output shape is finalised once the
- * token is available and the "trending searches" actor is picked/tested. The
- * mapper below (mapCountry) is where you adapt the actor's item shape to ours.
+ * Data source: Google Trends' free "Trending Now" RSS feed per country
+ * (https://trends.google.com/trending/rss?geo=XX) — no API key, no provider,
+ * no cost. The Worker fetches + parses it server-side. Stateless.
  */
 
-// Apify actor that returns Google "trending searches" for a country (no keyword).
-// Set to the chosen actor's id, e.g. "apify~google-trends-scraper".
-const ACTOR_ID = "APIFY_ACTOR_ID_TBD";
 const RATE = { max: 30, windowMs: 10 * 60 * 1000 };
 const MAX_COUNTRIES = 10;
-const TIMEOUT_MS = 55000;
+const TIMEOUT_MS = 15000;
 
 const CORS = {
   "access-control-allow-origin": "*",
@@ -35,42 +30,49 @@ function rateLimited(ip) {
   return false;
 }
 
-// Adapt an Apify dataset item to one trend { q, v, cat, news }.
-function mapTrend(item) {
-  const q = item.query || item.title || item.term || item.keyword || "";
-  // traffic can be "200K+", 200000, or a number-ish string
-  let v = item.traffic ?? item.searchVolume ?? item.formattedTraffic ?? item.value ?? 0;
-  if (typeof v === "string") {
-    const m = v.replace(/[, ]/g, "").match(/([\d.]+)\s*([KkMm]?)/);
-    v = m ? Math.round(parseFloat(m[1]) * (m[2].toLowerCase() === "m" ? 1e6 : m[2].toLowerCase() === "k" ? 1e3 : 1)) : 0;
-  }
-  const news = (item.articles && item.articles[0] && (item.articles[0].title || item.articles[0].snippet)) || item.news || item.relatedNews || null;
-  const cat = item.category || item.categoryName || null;
-  return { q: String(q), v: Number(v) || 0, cat, news };
+function decode(s) {
+  return (s || "")
+    .replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").trim();
+}
+function parseTraffic(s) {
+  if (!s) return 0;
+  const m = String(s).replace(/[,+\s]/g, "").match(/([\d.]+)([KkMm]?)/);
+  if (!m) return 0;
+  const mult = m[2].toLowerCase() === "m" ? 1e6 : m[2].toLowerCase() === "k" ? 1e3 : 1;
+  return Math.round(parseFloat(m[1]) * mult);
+}
+function parseRss(xml) {
+  const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].map(m => m[1]);
+  return items.map(it => {
+    const t = (it.match(/<title>([\s\S]*?)<\/title>/) || [])[1];
+    const tr = (it.match(/<ht:approx_traffic>([\s\S]*?)<\/ht:approx_traffic>/) || [])[1];
+    const n = (it.match(/<ht:news_item_title>([\s\S]*?)<\/ht:news_item_title>/) || [])[1];
+    return { q: decode(t).trim(), v: parseTraffic(tr), cat: null, news: decode(n) || null };
+  }).filter(x => x.q);
 }
 
-async function fetchCountry(code, token) {
-  // run the actor synchronously and read its dataset items
-  const url = `https://api.apify.com/v2/acts/${ACTOR_ID}/run-sync-get-dataset-items?token=${encodeURIComponent(token)}`;
-  const input = { geo: code, country: code, mode: "trending_searches", maxItems: 15 }; // TBD per actor
+async function fetchCountry(code) {
+  const url = `https://trends.google.com/trending/rss?geo=${encodeURIComponent(code)}`;
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  const base = { code, name: NAMES[code] || code, flag: flag(code) };
   try {
     const r = await fetch(url, {
-      method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify(input), signal: ctrl.signal,
+      headers: { "user-agent": "Mozilla/5.0 (compatible; CountryRadar/1.0)" },
+      signal: ctrl.signal,
+      cf: { cacheTtl: 600, cacheEverything: true }, // cache the feed ~10 min
     });
-    if (!r.ok) return { code, name: NAMES[code] || code, flag: flag(code), trends: [] };
-    const items = await r.json();
-    const trends = (Array.isArray(items) ? items : []).map(mapTrend).filter(t => t.q).slice(0, 15);
-    return { code, name: NAMES[code] || code, flag: flag(code), trends };
+    if (!r.ok) return { ...base, trends: [] };
+    const xml = await r.text();
+    return { ...base, trends: parseRss(xml).slice(0, 15) };
   } catch {
-    return { code, name: NAMES[code] || code, flag: flag(code), trends: [] };
+    return { ...base, trends: [] };
   } finally { clearTimeout(timer); }
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request) {
     if (request.method === "OPTIONS") return new Response(null, { headers: CORS });
     const url = new URL(request.url);
     if (url.pathname === "/health") return json({ ok: true });
@@ -83,9 +85,8 @@ export default {
     let codes = Array.isArray(body.countries) ? body.countries.map(c => String(c).toUpperCase().slice(0, 2)) : [];
     codes = [...new Set(codes)].slice(0, MAX_COUNTRIES);
     if (!codes.length) return json({ error: "countries_required" }, 400);
-    if (!env.APIFY_TOKEN) return json({ error: "server_not_configured" }, 500);
 
-    const countries = await Promise.all(codes.map(c => fetchCountry(c, env.APIFY_TOKEN)));
+    const countries = await Promise.all(codes.map(fetchCountry));
     return json({ countries });
   },
 };

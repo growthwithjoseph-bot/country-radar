@@ -4,7 +4,7 @@
 
 ![Live demo](https://img.shields.io/badge/▶%20Live-Demo-22d3ee?style=for-the-badge)
 ![Cloudflare Worker](https://img.shields.io/badge/edge-Cloudflare%20Worker-F38020?logo=cloudflare&logoColor=white)
-![Apify](https://img.shields.io/badge/data-Apify%20Google%20Trends-00b96b)
+![Google Trends](https://img.shields.io/badge/data-Google%20Trends%20(free)-4285F4?logo=google&logoColor=white)
 ![No accounts](https://img.shields.io/badge/no%20login-no%20storage-64748b)
 
 Select up to **10 countries** and hit scan. Each country becomes a **bubble
@@ -43,29 +43,29 @@ briefing clients on "what's hot where."
 - 🌍 **Shared-vs-unique highlighting** — gold = trending in several countries, green = a local-only spike.
 - 📊 **"Trending in multiple countries"** strip — the cross-border waves at a glance.
 - 🔎 **Hover any bubble** — search term, traffic, category, and a related headline.
-- 🔒 **No accounts, no database** — live data on demand; the API key stays server-side.
+- 🔒 **No accounts, no database, no API key** — live data on demand, straight from a free public feed.
 
 ---
 
 ## ⚙️ How it works
 
 ```
-Browser (this SPA)  ──POST /api/radar { countries }──▶  Cloudflare Worker  ──▶  Apify (Google Trends: trending searches)
-   renders bubble charts           (holds the Apify token, rate-limits, shapes JSON)          (per country, no keyword)
+Browser (this SPA)  ──POST /api/radar { countries }──▶  Cloudflare Worker  ──▶  Google Trends "Trending Now" RSS
+   renders bubble charts              (rate-limits, parses RSS, shapes JSON)            (free public feed, per country)
 ```
 
 - **Frontend:** one static HTML/JS page — no build. Bubble charts are inline SVG with a lightweight circle-packing layout.
-- **Worker:** stateless Cloudflare Worker; keeps your **Apify token** off the browser and shapes the response.
-- **Data:** Apify's Google Trends **"trending searches"** mode — trending queries per country, *without* a seed keyword (DataForSEO's Trends is keyword-based, so it can't do this).
+- **Worker:** stateless Cloudflare Worker; fetches the per-country feed, parses it, and shapes the response (edge-cached ~10 min).
+- **Data:** Google Trends' free **"Trending Now" RSS** (`trends.google.com/trending/rss?geo=XX`) — trending queries per country, *without* a seed keyword and *without* an API key (DataForSEO's Trends is keyword-based, so it can't do this).
 
-> **Demo mode** (the public site): a bundled sample renders the full experience — no key, no cost.
+> **Demo mode** (`API_BASE = ""`): a bundled sample renders the full experience with no Worker at all.
 
 ---
 
 ## 🚀 Run / deploy
 
-The live demo works with zero setup. For **real** data, deploy the Worker with
-your Apify token and point the frontend at it — see **[DEPLOY.md](DEPLOY.md)**.
+The live demo works with zero setup. For **real** data, deploy the free Worker
+(no API key needed) and point the frontend at it — see **[DEPLOY.md](DEPLOY.md)**.
 
 ---
 
@@ -79,4 +79,4 @@ your Apify token and point the frontend at it — see **[DEPLOY.md](DEPLOY.md)**
 
 ---
 
-<sub>Made with Trendible · trending data via Apify. Demo data is illustrative.</sub>
+<sub>Made with Trendible · trending data from Google Trends (free). Demo data is illustrative.</sub>

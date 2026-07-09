@@ -1,50 +1,49 @@
 # Deploying Country Radar
 
-Static frontend (already live on GitHub Pages, demo mode) + a Cloudflare Worker
-that holds your Apify token and fetches live trending searches.
+Static frontend (GitHub Pages) + a small Cloudflare Worker that fetches and
+shapes **Google Trends' free "Trending Now" RSS** per country. **No API key, no
+provider account, no cost** — the feed is public.
 
-## 1. Get an Apify token
-- Sign up at [apify.com](https://apify.com/) (free tier ≈ $5/mo credit).
-- **Settings → Integrations → API tokens** → copy your Personal API token (`apify_api_…`).
-
-## 2. Pick the trending-searches actor
-The Worker calls an Apify actor that returns Google **"trending searches"** per
-country (no keyword). Set `ACTOR_ID` in [`worker/worker.js`](worker/worker.js) to
-the chosen actor (e.g. one of the Google-Trends "trending now" actors on Apify),
-and adjust the actor `input` + the `mapTrend()` mapper to that actor's fields.
-
-> The mapper already handles common field names (`query`/`title`, `traffic`
-> as `200K+`/number, `articles[0].title`). Test one country and tweak if needed.
-
-## 3. Deploy the Worker
+## 1. Deploy the Worker
 ```bash
 npm install -g wrangler
 cd worker
 wrangler login
-wrangler secret put APIFY_TOKEN     # paste your apify_api_… token
-wrangler deploy                     # prints https://country-radar.<subdomain>.workers.dev
+wrangler deploy          # prints https://country-radar.<subdomain>.workers.dev
 ```
+There are **no secrets to set** — the data source is a public RSS feed.
+
 Test:
 ```bash
 curl -X POST https://country-radar.<subdomain>.workers.dev/api/radar \
   -H 'content-type: application/json' -d '{"countries":["US","IT"]}'
 ```
 
-## 4. Point the frontend at your Worker
+## 2. Point the frontend at your Worker
 In [`app.js`](app.js), set:
 ```js
 const API_BASE = "https://country-radar.<subdomain>.workers.dev";
 ```
 Commit + push → GitHub Pages redeploys and the site goes live.
 
-> Leave `API_BASE = ""` to keep the public site in demo mode (sample data, no cost).
+> Leave `API_BASE = ""` to keep the public site in demo mode (sample data).
 
 ## Run the frontend locally
 ```bash
 python3 -m http.server 8080   # http://localhost:8080
 ```
 
+## How the data works
+The Worker fetches `https://trends.google.com/trending/rss?geo=XX` (XX = ISO
+country code) and parses each `<item>` for:
+- `<title>` → the trending search term
+- `<ht:approx_traffic>` (`500+`, `200K+`, `2M+`) → an approximate volume
+- `<ht:news_item_title>` → a related headline
+
+The feed is edge-cached ~10 min (`cf.cacheTtl`), so repeat scans are instant and
+cheap.
+
 ## Knobs (in `worker/worker.js`)
 - `RATE` — per-IP rate limit (default 30 / 10 min).
 - `MAX_COUNTRIES` — cap per request (default 10).
-- `TIMEOUT_MS` — Apify runs can be slow (cold starts); default 55s.
+- `TIMEOUT_MS` — per-country fetch timeout (default 15s).

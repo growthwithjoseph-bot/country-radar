@@ -4,7 +4,7 @@
  * {countries:[isoCodes]} to `${API_BASE}/api/radar`.
  * Demo mode (default, GitHub Pages): loads public/sample-radar.json.
  */
-const API_BASE = ""; // e.g. "https://country-radar.trendible.workers.dev"
+const API_BASE = "https://country-radar.trendible.workers.dev"; // "" = demo mode (sample data)
 const MAX_COUNTRIES = 10;
 
 const COUNTRIES = [
@@ -197,7 +197,7 @@ async function scan() {
   try {
     const data = await getRadar(codes);
     renderRadar(data);
-    if (data.demo) banner("🎬 Demo mode — sample trending data. Deploy the Worker with your Apify token for live data (see README).");
+    if (data.demo) banner("🎬 Demo mode — sample trending data. Deploy the free Worker (Google Trends RSS) for live data on any country (see README).");
     else $("banner").hidden = true;
   } catch (e) {
     grid.innerHTML = ""; banner(e.message || "Something went wrong.", true);

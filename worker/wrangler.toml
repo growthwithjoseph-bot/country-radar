@@ -2,8 +2,7 @@ name = "country-radar"
 main = "worker.js"
 compatibility_date = "2024-11-01"
 
-# Secret (set with wrangler, never commit):
-#   wrangler secret put APIFY_TOKEN
+# No secrets needed — data source is Google Trends' free public RSS feed.
 #
 # Deploy:  wrangler deploy   (from this worker/ directory)
 # The deploy URL becomes API_BASE in ../app.js — see ../DEPLOY.md.
