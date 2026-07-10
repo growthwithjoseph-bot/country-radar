@@ -52,49 +52,94 @@ function parseRss(xml) {
   }).filter(x => x.q);
 }
 
-/* Optional AI layer: one batched call turns every (foreign-language) trend +
- * its news headline into a short English explanation, so a non-local reader can
- * understand what's actually trending. Provider-agnostic OpenAI-compatible chat
- * API (Groq free tier by default). If no key is set, or the call fails/times
- * out, we simply return without explanations — the tool never breaks on it. */
-const AI_TIMEOUT_MS = 12000;
-async function interpret(countries, env) {
+/* Optional AI layer: turn every (foreign-language) trend + its news headline
+ * into a short English explanation, so a non-local reader can understand what's
+ * actually trending. Provider-agnostic OpenAI-compatible chat API (Groq free
+ * tier by default).
+ *
+ * ONE call for the whole scan — deliberately not per-country and not parallel:
+ * a free-tier key rate-limits a concurrent burst (3+ simultaneous calls) to
+ * zero, and a single sequential request is one hit against the limit. We give
+ * it a high token ceiling and, if the JSON still comes back truncated, salvage
+ * every complete {"i","en"} pair from the partial text so you get most of them
+ * instead of none. If no key is set or the call fails, there are simply no
+ * explanations — the tool never breaks on it. */
+const AI_TIMEOUT_MS = 20000;
+const AI_SYS = "You explain trending Google searches to someone who doesn't speak the local language. " +
+  "For each item, write a SHORT English explanation (about 8-11 words, no more) of what it is and, if the headline shows it, why it's trending. " +
+  "Use the news headline as context. Be factual; if unsure, give the most likely meaning of the term. " +
+  'Return ONLY JSON: {"items":[{"i":<index>,"en":"..."}]} — one per input index, keep each "en" brief.';
+
+async function interpret(countries, env, diag) {
   const key = env && env.LLM_API_KEY;
-  if (!key) return;
+  if (!key) { if (diag) diag.reason = "no_key"; return; }
   const base = (env.LLM_BASE_URL || "https://api.groq.com/openai/v1").replace(/\/$/, "");
-  const model = env.LLM_MODEL || "llama-3.1-8b-instant";
+  const model = env.LLM_MODEL || "llama-3.3-70b-versatile";
 
-  const items = [];
-  countries.forEach(c => (c.trends || []).forEach(t => items.push({ country: c.name, q: t.q, news: t.news || "" })));
-  if (!items.length) return;
+  const flat = [];
+  countries.forEach(c => (c.trends || []).forEach(t => flat.push(t)));
+  if (!flat.length) return;
+  // Order by volume (biggest bubbles first) and cap the batch to stay within
+  // free-tier TPM (6000). If the model's output still overruns, it truncates
+  // from the tail — i.e. the smallest, least-hovered trends — and salvage keeps
+  // everything that did come back. Cap at 90 so input+output has headroom.
+  const MAX_ITEMS = 90;
+  const order = flat.map((_, i) => i).sort((a, b) => (flat[b].v || 0) - (flat[a].v || 0)).slice(0, MAX_ITEMS);
+  const payload = order.map(i => ({ i, q: flat[i].q, news: (flat[i].news || "").slice(0, 40) }));
+  const userContent = JSON.stringify({ items: payload });
 
-  const sys = "You explain trending Google searches to someone who doesn't speak the local language. " +
-    "For each item, write ONE concise English sentence (max ~16 words) saying what it is and, if the headline makes it clear, why it's trending. " +
-    "Use the news headline as context. Be factual and neutral; if genuinely unsure, give the most likely meaning of the search term. " +
-    'Return ONLY JSON: {"items":[{"i":<index>,"en":"..."}]} with one entry per input index.';
-  const user = JSON.stringify(items.map((it, i) => ({ i, country: it.country, q: it.q, news: it.news })));
+  // Groq free tier caps at 6000 tokens/min and counts (input + max_tokens)
+  // toward it. Estimate input tokens (~1 per 3.4 chars), then size max_tokens so
+  // the whole request stays under the cap while leaving as much room as possible
+  // for output. If the output still overflows, JSON mode returns a 400 with the
+  // partial in error.failed_generation — we salvage complete pairs from it below.
+  const estIn = Math.ceil((userContent.length + AI_SYS.length) / 2.9) + 120;
+  const maxTok = Math.max(700, Math.min(3000, 5600 - estIn));
 
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), AI_TIMEOUT_MS);
   try {
+    // NOTE: deliberately NOT using response_format:json_object. Strict JSON mode
+    // turns any minor malformation (one unescaped quote) into a 400 with the
+    // whole output buried in error.failed_generation. Plain mode returns 200 and
+    // we parse/salvage it ourselves — far more robust for a small local model.
     const r = await fetch(`${base}/chat/completions`, {
       method: "POST",
       headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
       signal: ctrl.signal,
       body: JSON.stringify({
-        model, temperature: 0.2, max_tokens: 2200,
-        response_format: { type: "json_object" },
-        messages: [{ role: "system", content: sys }, { role: "user", content: user }],
+        model, temperature: 0.2, max_tokens: maxTok,
+        messages: [{ role: "system", content: AI_SYS }, { role: "user", content: userContent }],
       }),
     });
-    if (!r.ok) return;
-    const data = await r.json();
-    let parsed; try { parsed = JSON.parse(data.choices?.[0]?.message?.content || "{}"); } catch { return; }
+    const raw = await r.text();
+    if (diag) { diag.sent = payload.length; diag.status = r.status; }
+    // On success the text is in choices[].message.content. If a request ever
+    // overruns and Groq returns a 400 with the partial output in
+    // error.failed_generation, that's salvageable the same way.
+    let content = "";
+    try {
+      const j = JSON.parse(raw);
+      content = j.choices?.[0]?.message?.content || j.error?.failed_generation || "";
+    } catch { /* leave content empty */ }
+    if (!content) return;
+
     const byI = {};
-    (parsed.items || []).forEach(o => { if (typeof o.i === "number" && o.en) byI[o.i] = String(o.en).trim(); });
-    let idx = 0;
-    countries.forEach(c => (c.trends || []).forEach(t => { if (byI[idx]) t.en = byI[idx]; idx++; }));
-  } catch { /* graceful: no explanations */ }
+    const clean = content.replace(/```json\s*|\s*```/g, "").trim(); // strip markdown fences if any
+    let parsed = null;
+    try { parsed = JSON.parse(clean); } catch { /* salvage below */ }
+    if (parsed && Array.isArray(parsed.items)) {
+      parsed.items.forEach(o => { if (typeof o.i === "number" && o.en) byI[o.i] = String(o.en).trim(); });
+    }
+    // Always run the tolerant salvage too (fills anything the strict parse missed
+    // and rescues malformed items like {"i":2,"en:"..."} — small models drop the
+    // closing quote). Resyncs on each "i":<n>, so one bad item can't break the rest.
+    const re = /"i"\s*:\s*(\d+)\s*,\s*"?en"?\s*:\s*"([^"]*)"/g;
+    let m; while ((m = re.exec(clean))) { const en = m[2].replace(/\\"/g, '"').replace(/\\n/g, " ").trim(); if (en && !byI[+m[1]]) byI[+m[1]] = en; }
+
+    flat.forEach((t, i) => { if (byI[i]) t.en = byI[i]; });
+    if (diag) diag.matched = Object.keys(byI).length;
+  } catch (e) { if (diag) diag.reason = "exception:" + (e && e.name); }
   finally { clearTimeout(timer); }
 }
 
@@ -111,7 +156,7 @@ async function fetchCountry(code) {
     });
     if (!r.ok) return { ...base, trends: [] };
     const xml = await r.text();
-    return { ...base, trends: parseRss(xml).slice(0, 15) };
+    return { ...base, trends: parseRss(xml).slice(0, 10) };
   } catch {
     return { ...base, trends: [] };
   } finally { clearTimeout(timer); }
@@ -133,7 +178,8 @@ export default {
     if (!codes.length) return json({ error: "countries_required" }, 400);
 
     const countries = await Promise.all(codes.map(fetchCountry));
-    await interpret(countries, env); // optional English explanations (no-op without a key)
-    return json({ countries });
+    const diag = url.searchParams.get("aidebug") ? {} : null;
+    await interpret(countries, env, diag); // optional English explanations (no-op without a key)
+    return json(diag ? { countries, _ai: diag } : { countries });
   },
 };
