@@ -19,6 +19,21 @@ curl -X POST https://country-radar.<subdomain>.workers.dev/api/radar \
   -H 'content-type: application/json' -d '{"countries":["US","IT"]}'
 ```
 
+### Optional: 🤖 AI interprets (English explanations)
+To add a one-line English explanation for every (often foreign-language) trend,
+give the Worker an OpenAI-compatible LLM key. One batched call per scan turns all
+trends + their news headlines into short English summaries.
+```bash
+wrangler secret put LLM_API_KEY      # e.g. a Groq key (free tier): gsk_…
+```
+Optional overrides (defaults target Groq's free `llama-3.1-8b-instant`):
+```bash
+wrangler secret put LLM_BASE_URL     # default https://api.groq.com/openai/v1
+wrangler secret put LLM_MODEL        # default llama-3.1-8b-instant
+```
+Works with any OpenAI-compatible endpoint (Groq, Ollama, OpenAI, …). **If no key
+is set, the feature is simply off** — the tool still returns trends normally.
+
 ## 2. Point the frontend at your Worker
 In [`app.js`](app.js), set:
 ```js

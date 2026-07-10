@@ -52,6 +52,52 @@ function parseRss(xml) {
   }).filter(x => x.q);
 }
 
+/* Optional AI layer: one batched call turns every (foreign-language) trend +
+ * its news headline into a short English explanation, so a non-local reader can
+ * understand what's actually trending. Provider-agnostic OpenAI-compatible chat
+ * API (Groq free tier by default). If no key is set, or the call fails/times
+ * out, we simply return without explanations — the tool never breaks on it. */
+const AI_TIMEOUT_MS = 12000;
+async function interpret(countries, env) {
+  const key = env && env.LLM_API_KEY;
+  if (!key) return;
+  const base = (env.LLM_BASE_URL || "https://api.groq.com/openai/v1").replace(/\/$/, "");
+  const model = env.LLM_MODEL || "llama-3.1-8b-instant";
+
+  const items = [];
+  countries.forEach(c => (c.trends || []).forEach(t => items.push({ country: c.name, q: t.q, news: t.news || "" })));
+  if (!items.length) return;
+
+  const sys = "You explain trending Google searches to someone who doesn't speak the local language. " +
+    "For each item, write ONE concise English sentence (max ~16 words) saying what it is and, if the headline makes it clear, why it's trending. " +
+    "Use the news headline as context. Be factual and neutral; if genuinely unsure, give the most likely meaning of the search term. " +
+    'Return ONLY JSON: {"items":[{"i":<index>,"en":"..."}]} with one entry per input index.';
+  const user = JSON.stringify(items.map((it, i) => ({ i, country: it.country, q: it.q, news: it.news })));
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), AI_TIMEOUT_MS);
+  try {
+    const r = await fetch(`${base}/chat/completions`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
+      signal: ctrl.signal,
+      body: JSON.stringify({
+        model, temperature: 0.2, max_tokens: 2200,
+        response_format: { type: "json_object" },
+        messages: [{ role: "system", content: sys }, { role: "user", content: user }],
+      }),
+    });
+    if (!r.ok) return;
+    const data = await r.json();
+    let parsed; try { parsed = JSON.parse(data.choices?.[0]?.message?.content || "{}"); } catch { return; }
+    const byI = {};
+    (parsed.items || []).forEach(o => { if (typeof o.i === "number" && o.en) byI[o.i] = String(o.en).trim(); });
+    let idx = 0;
+    countries.forEach(c => (c.trends || []).forEach(t => { if (byI[idx]) t.en = byI[idx]; idx++; }));
+  } catch { /* graceful: no explanations */ }
+  finally { clearTimeout(timer); }
+}
+
 async function fetchCountry(code) {
   const url = `https://trends.google.com/trending/rss?geo=${encodeURIComponent(code)}`;
   const ctrl = new AbortController();
@@ -72,7 +118,7 @@ async function fetchCountry(code) {
 }
 
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     if (request.method === "OPTIONS") return new Response(null, { headers: CORS });
     const url = new URL(request.url);
     if (url.pathname === "/health") return json({ ok: true });
@@ -87,6 +133,7 @@ export default {
     if (!codes.length) return json({ error: "countries_required" }, 400);
 
     const countries = await Promise.all(codes.map(fetchCountry));
+    await interpret(countries, env); // optional English explanations (no-op without a key)
     return json({ countries });
   },
 };

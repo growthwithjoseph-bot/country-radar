@@ -179,7 +179,7 @@ function card(c, sharedCount, globalMax) {
     text += `<text class="bubble-label" x="${b.x.toFixed(1)}" y="${(ty + vfs * 0.1).toFixed(1)}"
       text-anchor="middle" font-size="${vfs.toFixed(1)}" fill="#06121a" opacity=".65">${fmt(b.v)}</text>`;
     circles += `<g class="bubble" data-q="${esc(b.q)}" data-v="${b.v}" data-cat="${esc(b.cat || "")}"
-        data-news="${esc(b.news || "")}" data-shared="${b.shared ? sharedCount(normQ(b.q)) : 0}">
+        data-news="${esc(b.news || "")}" data-en="${esc(b.en || "")}" data-shared="${b.shared ? sharedCount(normQ(b.q)) : 0}">
       <circle cx="${b.x.toFixed(1)}" cy="${b.y.toFixed(1)}" r="${b.r.toFixed(1)}"
         fill="url(#${c.code}-${i})" stroke="${b.shared ? "#ffcf5c" : "rgba(255,255,255,.25)"}"
         stroke-width="${b.shared ? 1.6 : 1}"/>
@@ -203,6 +203,7 @@ function wireTooltips() {
       const sh = +d.shared;
       tooltip.innerHTML = `<div class="t-q">${esc(d.q)}</div>
         <div class="t-row"><b>${fmt(+d.v)}</b> searches${d.cat ? ` · ${esc(d.cat)}` : ""}</div>
+        ${d.en ? `<div class="t-ai"><span class="t-ai-tag">🤖 AI interprets</span>${esc(d.en)}</div>` : ""}
         ${d.news ? `<div class="t-news">📰 ${esc(d.news)}</div>` : ""}
         ${sh >= 2 ? `<div class="t-shared">🌍 trending in ${sh} countries</div>` : ""}`;
       tooltip.hidden = false;

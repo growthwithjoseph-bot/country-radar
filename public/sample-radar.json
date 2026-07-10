@@ -4,85 +4,85 @@
     {
       "code": "US", "name": "United States", "flag": "🇺🇸",
       "trends": [
-        {"q": "gta 6 trailer", "v": 2000000, "cat": "Games", "news": "Rockstar drops second GTA 6 trailer"},
-        {"q": "black friday deals", "v": 1000000, "cat": "Shopping", "news": "Best Black Friday deals live"},
-        {"q": "nfl scores", "v": 900000, "cat": "Sports", "news": "Sunday NFL results and standings"},
-        {"q": "taylor swift tour", "v": 500000, "cat": "Entertainment", "news": "New tour dates announced"},
-        {"q": "thanksgiving recipes", "v": 400000, "cat": "Food", "news": "Easy turkey recipes for the holiday"},
-        {"q": "powerball numbers", "v": 300000, "cat": "News", "news": "Tonight's Powerball drawing"},
-        {"q": "iphone 18", "v": 120000, "cat": "Tech", "news": "Apple's next iPhone leaks"}
+        {"q": "gta 6 trailer", "v": 2000000, "cat": "Games", "news": "Rockstar drops second GTA 6 trailer", "en": "Rockstar released a new trailer for Grand Theft Auto VI, a hugely anticipated video game."},
+        {"q": "black friday deals", "v": 1000000, "cat": "Shopping", "news": "Best Black Friday deals live", "en": "The post-Thanksgiving Black Friday shopping event with major retail discounts."},
+        {"q": "nfl scores", "v": 900000, "cat": "Sports", "news": "Sunday NFL results and standings", "en": "Live results and standings from Sunday's American football (NFL) games."},
+        {"q": "taylor swift tour", "v": 500000, "cat": "Entertainment", "news": "New tour dates announced", "en": "Pop star Taylor Swift announced new concert tour dates."},
+        {"q": "thanksgiving recipes", "v": 400000, "cat": "Food", "news": "Easy turkey recipes for the holiday", "en": "Cooking ideas for the US Thanksgiving holiday, especially roast turkey."},
+        {"q": "powerball numbers", "v": 300000, "cat": "News", "news": "Tonight's Powerball drawing", "en": "The winning numbers from the US Powerball lottery drawing."},
+        {"q": "iphone 18", "v": 120000, "cat": "Tech", "news": "Apple's next iPhone leaks", "en": "Leaks and rumours about Apple's next iPhone model."}
       ]
     },
     {
       "code": "GB", "name": "United Kingdom", "flag": "🇬🇧",
       "trends": [
-        {"q": "champions league", "v": 800000, "cat": "Sports", "news": "Quarter-final draw revealed"},
-        {"q": "gta 6 trailer", "v": 600000, "cat": "Games", "news": "GTA 6 trailer breaks records"},
-        {"q": "black friday deals", "v": 500000, "cat": "Shopping", "news": "UK Black Friday best buys"},
-        {"q": "premier league table", "v": 450000, "cat": "Sports", "news": "Latest Premier League standings"},
-        {"q": "strictly come dancing", "v": 300000, "cat": "Entertainment", "news": "This week's Strictly results"},
-        {"q": "iphone 18", "v": 90000, "cat": "Tech", "news": "iPhone 18 rumours"},
-        {"q": "petrol prices", "v": 70000, "cat": "News", "news": "Fuel prices rise again"}
+        {"q": "champions league", "v": 800000, "cat": "Sports", "news": "Quarter-final draw revealed", "en": "Europe's top club football competition; the quarter-final draw was revealed."},
+        {"q": "gta 6 trailer", "v": 600000, "cat": "Games", "news": "GTA 6 trailer breaks records", "en": "A new trailer for the Grand Theft Auto VI video game."},
+        {"q": "black friday deals", "v": 500000, "cat": "Shopping", "news": "UK Black Friday best buys", "en": "UK Black Friday sales and discount roundups."},
+        {"q": "premier league table", "v": 450000, "cat": "Sports", "news": "Latest Premier League standings", "en": "The current standings of England's top football league."},
+        {"q": "strictly come dancing", "v": 300000, "cat": "Entertainment", "news": "This week's Strictly results", "en": "Popular BBC celebrity ballroom-dancing TV show; this week's results."},
+        {"q": "iphone 18", "v": 90000, "cat": "Tech", "news": "iPhone 18 rumours", "en": "Rumours about Apple's upcoming iPhone."},
+        {"q": "petrol prices", "v": 70000, "cat": "News", "news": "Fuel prices rise again", "en": "Rising fuel prices at UK petrol stations."}
       ]
     },
     {
       "code": "IT", "name": "Italy", "flag": "🇮🇹",
       "trends": [
-        {"q": "serie a classifica", "v": 700000, "cat": "Sports", "news": "La classifica aggiornata di Serie A"},
-        {"q": "gta 6 trailer", "v": 550000, "cat": "Games", "news": "Nuovo trailer di GTA 6"},
-        {"q": "sanremo 2026", "v": 500000, "cat": "Entertainment", "news": "Il cast di Sanremo 2026"},
-        {"q": "meteo domani", "v": 400000, "cat": "Weather", "news": "Previsioni meteo per domani"},
-        {"q": "black friday", "v": 300000, "cat": "Shopping", "news": "Le migliori offerte del Black Friday"},
-        {"q": "manovra 2026", "v": 250000, "cat": "News", "news": "Le novità della manovra di bilancio"},
-        {"q": "sciopero treni", "v": 120000, "cat": "News", "news": "Sciopero dei treni previsto per venerdì"}
+        {"q": "serie a classifica", "v": 700000, "cat": "Sports", "news": "La classifica aggiornata di Serie A", "en": "The current standings of Italy's top football league, Serie A."},
+        {"q": "gta 6 trailer", "v": 550000, "cat": "Games", "news": "Nuovo trailer di GTA 6", "en": "A new trailer for the Grand Theft Auto VI video game."},
+        {"q": "sanremo 2026", "v": 500000, "cat": "Entertainment", "news": "Il cast di Sanremo 2026", "en": "Italy's famous Sanremo music festival; the 2026 line-up was announced."},
+        {"q": "meteo domani", "v": 400000, "cat": "Weather", "news": "Previsioni meteo per domani", "en": "The weather forecast for tomorrow in Italy."},
+        {"q": "black friday", "v": 300000, "cat": "Shopping", "news": "Le migliori offerte del Black Friday", "en": "Black Friday shopping discounts in Italy."},
+        {"q": "manovra 2026", "v": 250000, "cat": "News", "news": "Le novità della manovra di bilancio", "en": "Italy's 2026 government budget law and its new measures."},
+        {"q": "sciopero treni", "v": 120000, "cat": "News", "news": "Sciopero dei treni previsto per venerdì", "en": "A planned train strike in Italy, expected on Friday."}
       ]
     },
     {
       "code": "DE", "name": "Germany", "flag": "🇩🇪",
       "trends": [
-        {"q": "bundesliga tabelle", "v": 650000, "cat": "Sports", "news": "Aktuelle Bundesliga-Tabelle"},
-        {"q": "gta 6 trailer", "v": 480000, "cat": "Games", "news": "GTA 6 Trailer veröffentlicht"},
-        {"q": "wetter morgen", "v": 420000, "cat": "Weather", "news": "Wettervorhersage für morgen"},
-        {"q": "black friday", "v": 350000, "cat": "Shopping", "news": "Die besten Black-Friday-Angebote"},
-        {"q": "tatort heute", "v": 280000, "cat": "Entertainment", "news": "Der Tatort am Sonntag"},
-        {"q": "bahnstreik", "v": 150000, "cat": "News", "news": "Erneuter Bahnstreik angekündigt"},
-        {"q": "benzinpreis", "v": 80000, "cat": "News", "news": "Spritpreise steigen weiter"}
+        {"q": "bundesliga tabelle", "v": 650000, "cat": "Sports", "news": "Aktuelle Bundesliga-Tabelle", "en": "The current standings of Germany's top football league, the Bundesliga."},
+        {"q": "gta 6 trailer", "v": 480000, "cat": "Games", "news": "GTA 6 Trailer veröffentlicht", "en": "A new trailer for the Grand Theft Auto VI video game."},
+        {"q": "wetter morgen", "v": 420000, "cat": "Weather", "news": "Wettervorhersage für morgen", "en": "The weather forecast for tomorrow in Germany."},
+        {"q": "black friday", "v": 350000, "cat": "Shopping", "news": "Die besten Black-Friday-Angebote", "en": "Black Friday shopping discounts in Germany."},
+        {"q": "tatort heute", "v": 280000, "cat": "Entertainment", "news": "Der Tatort am Sonntag", "en": "Tonight's episode of Tatort, Germany's long-running Sunday crime TV series."},
+        {"q": "bahnstreik", "v": 150000, "cat": "News", "news": "Erneuter Bahnstreik angekündigt", "en": "A railway strike affecting German trains has been announced."},
+        {"q": "benzinpreis", "v": 80000, "cat": "News", "news": "Spritpreise steigen weiter", "en": "Rising petrol prices in Germany."}
       ]
     },
     {
       "code": "FR", "name": "France", "flag": "🇫🇷",
       "trends": [
-        {"q": "ligue 1 classement", "v": 600000, "cat": "Sports", "news": "Le classement de Ligue 1"},
-        {"q": "gta 6 trailer", "v": 470000, "cat": "Games", "news": "Nouvelle bande-annonce de GTA 6"},
-        {"q": "météo demain", "v": 400000, "cat": "Weather", "news": "Prévisions météo pour demain"},
-        {"q": "black friday", "v": 320000, "cat": "Shopping", "news": "Les meilleures offres du Black Friday"},
-        {"q": "grève sncf", "v": 260000, "cat": "News", "news": "Grève SNCF : trafic perturbé ce week-end"},
-        {"q": "roland garros", "v": 140000, "cat": "Sports", "news": "Le tableau de Roland-Garros"},
-        {"q": "prix carburant", "v": 70000, "cat": "News", "news": "Le prix du carburant augmente"}
+        {"q": "ligue 1 classement", "v": 600000, "cat": "Sports", "news": "Le classement de Ligue 1", "en": "The current standings of France's top football league, Ligue 1."},
+        {"q": "gta 6 trailer", "v": 470000, "cat": "Games", "news": "Nouvelle bande-annonce de GTA 6", "en": "A new trailer for the Grand Theft Auto VI video game."},
+        {"q": "météo demain", "v": 400000, "cat": "Weather", "news": "Prévisions météo pour demain", "en": "The weather forecast for tomorrow in France."},
+        {"q": "black friday", "v": 320000, "cat": "Shopping", "news": "Les meilleures offres du Black Friday", "en": "Black Friday shopping discounts in France."},
+        {"q": "grève sncf", "v": 260000, "cat": "News", "news": "Grève SNCF : trafic perturbé ce week-end", "en": "A strike by France's national railway (SNCF), disrupting weekend trains."},
+        {"q": "roland garros", "v": 140000, "cat": "Sports", "news": "Le tableau de Roland-Garros", "en": "The French Open tennis tournament and its match draw."},
+        {"q": "prix carburant", "v": 70000, "cat": "News", "news": "Le prix du carburant augmente", "en": "Rising fuel prices in France."}
       ]
     },
     {
       "code": "ES", "name": "Spain", "flag": "🇪🇸",
       "trends": [
-        {"q": "la liga clasificación", "v": 620000, "cat": "Sports", "news": "La clasificación actualizada de LaLiga"},
-        {"q": "gta 6 trailer", "v": 500000, "cat": "Games", "news": "Nuevo tráiler de GTA 6"},
-        {"q": "el tiempo mañana", "v": 380000, "cat": "Weather", "news": "Previsión del tiempo para mañana"},
-        {"q": "black friday", "v": 300000, "cat": "Shopping", "news": "Las mejores ofertas del Black Friday"},
-        {"q": "lotería de navidad", "v": 240000, "cat": "News", "news": "Comprobar el número de la Lotería de Navidad"},
-        {"q": "operación triunfo", "v": 130000, "cat": "Entertainment", "news": "La gala de Operación Triunfo de esta semana"},
-        {"q": "iphone 18", "v": 85000, "cat": "Tech", "news": "Filtraciones del iPhone 18"}
+        {"q": "la liga clasificación", "v": 620000, "cat": "Sports", "news": "La clasificación actualizada de LaLiga", "en": "The current standings of Spain's top football league, LaLiga."},
+        {"q": "gta 6 trailer", "v": 500000, "cat": "Games", "news": "Nuevo tráiler de GTA 6", "en": "A new trailer for the Grand Theft Auto VI video game."},
+        {"q": "el tiempo mañana", "v": 380000, "cat": "Weather", "news": "Previsión del tiempo para mañana", "en": "The weather forecast for tomorrow in Spain."},
+        {"q": "black friday", "v": 300000, "cat": "Shopping", "news": "Las mejores ofertas del Black Friday", "en": "Black Friday shopping discounts in Spain."},
+        {"q": "lotería de navidad", "v": 240000, "cat": "News", "news": "Comprobar el número de la Lotería de Navidad", "en": "Spain's huge Christmas lottery; checking whether your ticket number won."},
+        {"q": "operación triunfo", "v": 130000, "cat": "Entertainment", "news": "La gala de Operación Triunfo de esta semana", "en": "Popular Spanish TV music talent show; this week's gala."},
+        {"q": "iphone 18", "v": 85000, "cat": "Tech", "news": "Filtraciones del iPhone 18", "en": "Leaks about Apple's next iPhone."}
       ]
     },
     {
       "code": "PL", "name": "Poland", "flag": "🇵🇱",
       "trends": [
-        {"q": "ekstraklasa tabela", "v": 520000, "cat": "Sports", "news": "Aktualna tabela Ekstraklasy"},
-        {"q": "gta 6 trailer", "v": 430000, "cat": "Games", "news": "Nowy zwiastun GTA 6"},
-        {"q": "pogoda jutro", "v": 360000, "cat": "Weather", "news": "Prognoza pogody na jutro"},
-        {"q": "black friday", "v": 290000, "cat": "Shopping", "news": "Najlepsze promocje na Black Friday"},
-        {"q": "kurs euro", "v": 210000, "cat": "News", "news": "Kurs euro do złotego dziś"},
-        {"q": "taniec z gwiazdami", "v": 120000, "cat": "Entertainment", "news": "Wyniki Tańca z Gwiazdami"},
-        {"q": "oszczędzanie", "v": 70000, "cat": "News", "news": "Nowe zasady oszczędzania dla Polaków"}
+        {"q": "ekstraklasa tabela", "v": 520000, "cat": "Sports", "news": "Aktualna tabela Ekstraklasy", "en": "The current standings of Poland's top football league, the Ekstraklasa."},
+        {"q": "gta 6 trailer", "v": 430000, "cat": "Games", "news": "Nowy zwiastun GTA 6", "en": "A new trailer for the Grand Theft Auto VI video game."},
+        {"q": "pogoda jutro", "v": 360000, "cat": "Weather", "news": "Prognoza pogody na jutro", "en": "The weather forecast for tomorrow in Poland."},
+        {"q": "black friday", "v": 290000, "cat": "Shopping", "news": "Najlepsze promocje na Black Friday", "en": "Black Friday shopping discounts in Poland."},
+        {"q": "kurs euro", "v": 210000, "cat": "News", "news": "Kurs euro do złotego dziś", "en": "Today's euro-to-Polish-złoty exchange rate."},
+        {"q": "taniec z gwiazdami", "v": 120000, "cat": "Entertainment", "news": "Wyniki Tańca z Gwiazdami", "en": "Poland's 'Dancing with the Stars' celebrity show and its results."},
+        {"q": "oszczędzanie", "v": 70000, "cat": "News", "news": "Nowe zasady oszczędzania dla Polaków", "en": "New rules around saving and investing money for Polish citizens."}
       ]
     }
   ]

@@ -107,7 +107,16 @@ body {
 .tooltip .t-q { font-weight: 700; margin-bottom: 3px; }
 .tooltip .t-row { color: var(--muted); }
 .tooltip .t-row b { color: var(--ink); }
-.tooltip .t-news { margin-top: 5px; color: #b7c7d3; font-style: italic; }
+.tooltip .t-ai {
+  margin-top: 7px; padding: 7px 9px; border-radius: 8px;
+  background: rgba(34,211,238,.10); border: 1px solid rgba(34,211,238,.30);
+  color: #d7f6fb; line-height: 1.35;
+}
+.tooltip .t-ai-tag {
+  display: block; font-size: 10px; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--radar); margin-bottom: 2px;
+}
+.tooltip .t-news { margin-top: 6px; color: #b7c7d3; font-style: italic; }
 .tooltip .t-shared { color: var(--shared); margin-top: 4px; }
 
 .foot { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;

@@ -43,6 +43,7 @@ briefing clients on "what's hot where."
 - 🌍 **Shared-vs-unique highlighting** — gold = trending in several countries, green = a local-only spike.
 - 📊 **"Trending in multiple countries"** strip — the cross-border waves at a glance.
 - 🔎 **Hover any bubble** — search term, traffic, category, and a related headline.
+- 🤖 **"AI interprets"** — an optional one-line English explanation of each trend, so a foreign-language term like `wegenvignet belgie` reads as *"Belgium's new road-toll sticker, mandatory from May 2027."*
 - 🔒 **No accounts, no database, no API key** — live data on demand, straight from a free public feed.
 
 ---
@@ -55,7 +56,7 @@ Browser (this SPA)  ──POST /api/radar { countries }──▶  Cloudflare Wor
 ```
 
 - **Frontend:** one static HTML/JS page — no build. Bubble charts are inline SVG with a lightweight circle-packing layout.
-- **Worker:** stateless Cloudflare Worker; fetches the per-country feed, parses it, and shapes the response (edge-cached ~10 min).
+- **Worker:** stateless Cloudflare Worker; fetches the per-country feed, parses it, and shapes the response (edge-cached ~10 min). Optionally makes one batched LLM call to add English explanations (any OpenAI-compatible key; off if unset).
 - **Data:** Google Trends' free **"Trending Now" RSS** (`trends.google.com/trending/rss?geo=XX`) — trending queries per country, *without* a seed keyword and *without* an API key (DataForSEO's Trends is keyword-based, so it can't do this).
 
 > **Demo mode** (`API_BASE = ""`): a bundled sample renders the full experience with no Worker at all.
