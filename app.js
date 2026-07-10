@@ -37,6 +37,37 @@ function fmt(n) {
 function esc(s) { return String(s == null ? "" : s).replace(/[<>&"]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" }[c])); }
 const normQ = (q) => (q || "").toLowerCase().trim();
 
+// Wrap a trend term to fit inside a bubble: up to `maxLines` lines of ~`perLine`
+// chars. Words that don't fit are pushed to the next line; anything past the
+// last line is ellipsised. Handles space-less scripts (e.g. CJK) by chunking.
+function wrapLabel(q, perLine, maxLines) {
+  q = String(q || "").trim();
+  if (!q) return [""];
+  if (!/\s/.test(q)) { // no spaces
+    if (q.length <= perLine) return [q];
+    if (/[　-鿿가-힯＀-￯]/.test(q)) { // CJK: chunk across lines
+      const out = [];
+      for (let i = 0; i < q.length && out.length < maxLines; i += perLine) out.push(q.slice(i, i + perLine));
+      if (q.length > maxLines * perLine) out[out.length - 1] = out[out.length - 1].slice(0, perLine - 1) + "…";
+      return out;
+    }
+    return [q.slice(0, perLine - 1) + "…"]; // single Latin word: one line, truncated
+  }
+  const words = q.split(/\s+/), lines = [];
+  let cur = "";
+  for (const w of words) {
+    const cand = cur ? cur + " " + w : w;
+    if (cand.length <= perLine || !cur) { cur = cand; }
+    else { lines.push(cur); cur = w; if (lines.length === maxLines) break; }
+  }
+  if (lines.length < maxLines && cur) lines.push(cur);
+  const capped = lines.slice(0, maxLines).map(l => l.length > perLine ? l.slice(0, perLine - 1) + "…" : l);
+  const shownLen = capped.join("").replace(/…/g, "").length;
+  if (shownLen < q.replace(/\s+/g, "").length && !capped[capped.length - 1].endsWith("…"))
+    capped[capped.length - 1] = capped[capped.length - 1].slice(0, Math.max(1, perLine - 1)) + "…";
+  return capped;
+}
+
 // --- country chips ---
 function renderChips() {
   const el = $("countryChips");
@@ -111,10 +142,15 @@ function renderRadar(data) {
 }
 
 function card(c, sharedCount, globalMax) {
-  const W = 340, H = 300;
-  const trends = (c.trends || []).slice(0, 12).map(t => {
+  const W = 360, H = 320;
+  // High floor + sqrt scaling: keeps sizes comparable across countries while
+  // guaranteeing even the smallest bubble is big enough to hold a label, so a
+  // single outlier (e.g. one country's viral spike) can't shrink the rest to
+  // unreadable dots.
+  const R_MIN = 23, R_SPAN = 30;
+  const trends = (c.trends || []).slice(0, 10).map(t => {
     const shared = sharedCount(normQ(t.q)) >= 2;
-    const r = 15 + 30 * Math.sqrt((t.v || 0) / globalMax);
+    const r = R_MIN + R_SPAN * Math.sqrt((t.v || 0) / globalMax);
     return { ...t, r, shared };
   }).sort((a, b) => b.r - a.r);
   pack(trends, W, H);
@@ -126,19 +162,28 @@ function card(c, sharedCount, globalMax) {
       <stop offset="0" stop-color="#fff" stop-opacity=".9"/>
       <stop offset="0.4" stop-color="${col}" stop-opacity=".95"/>
       <stop offset="1" stop-color="${col}" stop-opacity=".55"/></radialGradient>`;
-    const showLabel = b.r >= 20;
-    const fs = Math.max(8.5, Math.min(13, b.r / 2.7));
-    const maxch = Math.max(4, Math.floor(b.r / 3.3));
-    const lab = (b.q || "").length > maxch ? b.q.slice(0, maxch - 1) + "…" : b.q;
+    // Every bubble gets a label. Wrap the term onto up to 2 lines so more of it
+    // is readable, then a value line underneath.
+    const fs = Math.max(9, Math.min(13.5, b.r / 2.6));
+    const perLine = Math.max(5, Math.floor(b.r / (fs * 0.32)));
+    const lines = wrapLabel(b.q || "", perLine, 2);
+    const vfs = Math.max(8, fs * 0.78);
+    const block = lines.length * fs + vfs;              // total text height
+    let ty = b.y - block / 2 + fs * 0.85;               // first baseline
+    let text = "";
+    for (const ln of lines) {
+      text += `<text class="bubble-label" x="${b.x.toFixed(1)}" y="${ty.toFixed(1)}"
+        text-anchor="middle" font-size="${fs.toFixed(1)}" fill="#06121a">${esc(ln)}</text>`;
+      ty += fs;
+    }
+    text += `<text class="bubble-label" x="${b.x.toFixed(1)}" y="${(ty + vfs * 0.1).toFixed(1)}"
+      text-anchor="middle" font-size="${vfs.toFixed(1)}" fill="#06121a" opacity=".65">${fmt(b.v)}</text>`;
     circles += `<g class="bubble" data-q="${esc(b.q)}" data-v="${b.v}" data-cat="${esc(b.cat || "")}"
         data-news="${esc(b.news || "")}" data-shared="${b.shared ? sharedCount(normQ(b.q)) : 0}">
       <circle cx="${b.x.toFixed(1)}" cy="${b.y.toFixed(1)}" r="${b.r.toFixed(1)}"
         fill="url(#${c.code}-${i})" stroke="${b.shared ? "#ffcf5c" : "rgba(255,255,255,.25)"}"
         stroke-width="${b.shared ? 1.6 : 1}"/>
-      ${showLabel ? `<text class="bubble-label" x="${b.x.toFixed(1)}" y="${(b.y - 1).toFixed(1)}"
-        text-anchor="middle" font-size="${fs.toFixed(1)}" fill="#06121a">${esc(lab)}</text>
-      <text class="bubble-label" x="${b.x.toFixed(1)}" y="${(b.y + fs).toFixed(1)}"
-        text-anchor="middle" font-size="${(fs * 0.8).toFixed(1)}" fill="#06121a" opacity=".7">${fmt(b.v)}</text>` : ""}
+      ${text}
     </g>`;
   });
 
